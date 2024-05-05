@@ -20,7 +20,7 @@ Handles downloads and uploads betwen client and server.
 --------------------------------------------------------------
 
 How to execute program:
-1. oen the folder and go to the server folder
+1. open the folder and go to the server folder
 2. run the command prompt from the server folder, alternatively, you can just navigate to the correct directory using cd on command prompt
 4. type the command: g++ -o server server.cpp TCPLib.cpp -pthread
 6. In a seperate instance of command prompt navigate to, or open from the client folder
