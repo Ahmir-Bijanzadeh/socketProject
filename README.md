@@ -31,7 +31,7 @@ How to execute program:
 10. with this, a connection has been established between the server and the client, the client can now input various commands that will perform specific functions
    
 11. list of commands you can input into the client:
-    - ls; List all files under the present folder in the directory of the client
+    - ls; List all files under the present folder in the directory of the server
     - quit; closes client connection to the server
     - get; download files from the server folder to the client
     - put; upload a file from the client to the server
