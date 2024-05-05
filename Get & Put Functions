@@ -1,0 +1,65 @@
+else if(strcmp("put",token) == 0){
+			int data_port,datasock,lSize,num_blks,num_last_blk,i;
+			char port[MAXLINE], buffer[MAXLINE],char_num_blks[MAXLINE],char_num_last_blk[MAXLINE];
+			FILE *fp;
+			tcp_recv(connfd, port, MAXLINE);
+			data_port = atoi(port);
+			datasock = data_socket(data_port, argv[1]);
+			token = strtok(NULL," \n");
+			if((fp = fopen(token,"r")) != NULL){
+				tcp_send(connfd, "1",  MAXLINE);
+				fseek(fp, 0, SEEK_END);
+				lSize = ftell (fp);
+				rewind (fp);
+				num_blks = lSize/MAXLINE;
+				num_last_blk = lSize%MAXLINE; 
+				sprintf(char_num_blks,"%d",num_blks);
+				tcp_send(connfd, char_num_blks,  MAXLINE);
+
+				for(i= 0; i < num_blks; i++) { 
+					fread (buffer,sizeof(char), MAXLINE,fp);
+					tcp_send(datasock, buffer,  MAXLINE);
+				}
+				sprintf(char_num_last_blk,"%d",num_last_blk);
+				tcp_send(connfd, char_num_last_blk,  MAXLINE);
+				if (num_last_blk > 0) { 
+					fread (buffer,sizeof(char),num_last_blk,fp);
+					tcp_send(datasock, buffer,  MAXLINE);
+				}
+				fclose(fp);
+				printf("File upload done.\n");
+			}
+		}
+		else if(strcmp("get",token) == 0){
+			int data_port,datasock,lSize,num_blks,num_last_blk,i;
+			char port[MAXLINE], buffer[MAXLINE],char_num_blks[MAXLINE],char_num_last_blk[MAXLINE],message[MAXLINE];
+			FILE *fp;
+			tcp_recv(connfd, port, MAXLINE);
+			data_port=atoi(port);
+			datasock=data_socket(data_port,argv[1]);
+			token=strtok(NULL," \n");
+			tcp_recv(connfd,message,MAXLINE);
+			if(strcmp("1",message)==0){
+				if((fp=fopen(token,"w"))==NULL)
+					printf("Error in creating file\n");
+				else
+				{
+					tcp_recv(connfd, char_num_blks, MAXLINE);
+					num_blks=atoi(char_num_blks);
+					for(i= 0; i < num_blks; i++) { 
+						tcp_recv(datasock, buffer, MAXLINE);
+						fwrite(buffer,sizeof(char),MAXLINE,fp);
+						//cout<<buffer<<endl;
+					}
+					tcp_recv(connfd, char_num_last_blk, MAXLINE);
+					num_last_blk=atoi(char_num_last_blk);
+					if (num_last_blk > 0) { 
+						tcp_recv(datasock, buffer, MAXLINE);
+						fwrite(buffer,sizeof(char),num_last_blk,fp);
+						//cout<<buffer<<endl;
+					}
+					fclose(fp);
+					printf("File download done.\n");
+				}
+			}
+		}
